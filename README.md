@@ -1,2 +1,2 @@
 # cmake
-Cmake helper files
+CMake helper files
