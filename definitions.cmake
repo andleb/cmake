@@ -32,11 +32,13 @@ else()
     return()
 endif()
 
-# add filesystem support
+# add filesystem support 
 if(CMAKE_EXE_LINKER_FLAGS MATCHES "lc\\+\\+")
     message("USING LIBC++")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -lc++fs")
     set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -lc++fs")
 else()    	
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -lstdc++fs")
 	set( CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -lstdc++fs" )
 endif()	
 
