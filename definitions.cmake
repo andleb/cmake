@@ -16,11 +16,21 @@ if( CMAKE_CXX_COMPILER_ID MATCHES "GNU" )
 #if qtcreator sets CMAKE_CXX_COMPILER in kit selection
 elseif( CMAKE_CXX_COMPILER_ID MATCHES "clang" OR CMAKE_CXX_COMPILER_ID MATCHES "Clang" )
     message( "USING CLANG" )
+
     # NOTE: this overrides setting clang++-8
 #    set(CMAKE_CXX_COMPILER "clang++")
     # Done in IDE instead
 #    set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++" )
 #    set( CMAKE_EXE_LINKER_FLAGS "-lc++abi" )
+
+	# add filesystem support
+    if(CMAKE_EXE_LINKER_FLAGS MATCHES "lc\\+\\+")
+        message("USING LIBC++")
+        set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -lc++fs")
+    else()    	
+    	set( CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -lstdc++fs" )
+	endif()	
+    
     set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Weverything -Wno-c++98-compat -Wno-c++98-compat-pedantic -Wno-unused-macros -Wno-newline-eof\
     -Wno-exit-time-destructors -Wno-global-constructors -Wno-gnu-zero-variadic-macro-arguments\
     -Wno-documentation -Wno-shadow -Wno-missing-prototypes -Wno-vla\
@@ -30,4 +40,5 @@ else()
     return()
 endif()
 
-message( "CMAKE_CXX_FLAGS: " ${CMAKE_CXX_FLAGS})
+message("CMAKE_EXE_LINKER_FLAGS: " ${CMAKE_EXE_LINKER_FLAGS})
+message("CMAKE_CXX_FLAGS: " ${CMAKE_CXX_FLAGS})
