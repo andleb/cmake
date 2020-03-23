@@ -226,42 +226,69 @@ message("BOOST_INCLUDEDIR:${BOOST_INCLUDEDIR}")
 set(_arch_suffix 64)
 message("_arch_suffix:${_arch_suffix}")
 
-#Options for the finder
-set(Boost_DEBUG 0)
-set(Boost_DETAILED_FAILURE_MSG 0)
 
-
+# TODO: full clang++ support
 # Script for compiler switching
-if( CMAKE_CXX_COMPILER_ID MATCHES "GNU" )
-    message( "USING GCC " ${CMAKE_CXX_COMPILER} )
-    if(CMAKE_CXX_COMPILER MATCHES "g\\+\\+\\-7")
-        message( "USING GCC 7" )
-        set( Boost_COMPILER "-gcc73" "gcc73" )
-    else()
-        set( Boost_COMPILER "-gcc" "gcc" )
-    endif()
-elseif( CMAKE_CXX_COMPILER_ID MATCHES "clang" OR CMAKE_CXX_COMPILER_ID MATCHES "Clang" )
-    message( "USING CLANG" )
-    message("${CMAKE_EXE_LINKER_FLAGS}")
+#if( CMAKE_CXX_COMPILER_ID MATCHES "GNU" )
+#    message( "USING GCC " ${CMAKE_CXX_COMPILER} )
+#    if(CMAKE_CXX_COMPILER MATCHES "g\\+\\+\\-7")
+#        message( "USING GCC 7" )
+#        set( Boost_COMPILER "-gcc7" "gcc7" )
+#    elseif(CMAKE_CXX_COMPILER MATCHES "g\\+\\+\\-8")
+#        message( "USING GCC 8" )
+#        set( Boost_COMPILER "-gcc8" "gcc8" )
+#    else()
+#        set( Boost_COMPILER "-gcc" "gcc" )
+#    endif()
+if(CMAKE_CXX_COMPILER_ID MATCHES "clang" OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+#    message( "USING CLANG" )
+#    message("${CMAKE_EXE_LINKER_FLAGS}")
     if( CMAKE_EXE_LINKER_FLAGS MATCHES "lc\\+\\+" )
         message( "USING LIBC++" )
-        set(Boost_COMPILER "-clanglibc++" "clanglibc++" )
-    else()
-        set(Boost_COMPILER "-clang60" "clang60" )
+        set(Boost_COMPILER "-clanglibc++" "clanglibc++")
     endif()
-else()
-    message( WARNING "DID NOT MATCH A COMPILER!")
+#    elseif(CMAKE_CXX_COMPILER MATCHES "clang\\+\\+\\-8")
+#        set(Boost_COMPILER "-clang8" "clang8" )
+#    elseif(CMAKE_CXX_COMPILER MATCHES "clang\\+\\+\\-9")
+#        set(Boost_COMPILER "-clang9" "clang9" )
+#    else()
+#        set(Boost_COMPILER "-clang" "clang" )
+#    endif()
+#else()
+#    message( WARNING "DID NOT MATCH A COMPILER!")
 endif()
 
-message( "Setting Boost options" )
-set( Boost_DETAILED_FAILURE_MSG ON )
+message( "Setting Boost options..." )
+set(Boost_VERBOSE ON)
+set(Boost_DEBUG ON)
+set(Boost_DETAILED_FAILURE_MSG ON)
+
+if(CMAKE_BUILD_TYPE MATCHES "Debug")
+    set(Boost_USE_DEBUG_LIBS ON)
+else()
+    set(Boost_USE_RELEASE_LIBS ON)
+endif()
+
+
+set (Boost_USE_MULTITHREAD ON)  # enable multithreading
 set( Boost_USE_STATIC_LIBS OFF ) # enable dynamic linking
 set( Boost_USE_STATIC_RUNTIME OFF )
-set (Boost_USE_MULTITHREAD ON)  # enable multithreading
 
+#set(Boost_USE_DEBUG_RUNTIME OFF) When ON, uses Boost libraries linked against the
+##                           debug runtime. When OFF, against the release
+##                           runtime. The default is to use either.
 
+set(Boost_PYTHON_VERSION 3.8)   # The version of Python against which Boost.Python
+                                # has been built; only required when more than one
+                                # Boost.Python library is present.
+
+# Boost 1.7 on provides some info to CMake, located in /local/lib/cmake
+set (Boost_NO_BOOST_CMAKE OFF)
+
+message( "Attempting to find Boost..." )
 #find_package(Boost)
-find_package(Boost COMPONENTS REQUIRED filesystem graph regex thread unit_test_framework )
+find_package(Boost COMPONENTS REQUIRED filesystem graph regex thread unit_test_framework
+             PATHS /usr/local/lib/ )
 
 if (Boost_FOUND)
     include_directories(SYSTEM ${Boost_INCLUDE_DIR})
