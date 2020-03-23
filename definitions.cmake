@@ -22,7 +22,7 @@ elseif( CMAKE_CXX_COMPILER_ID MATCHES "clang" OR CMAKE_CXX_COMPILER_ID MATCHES "
     # Done in IDE instead
 #    set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++" )
 #    set( CMAKE_EXE_LINKER_FLAGS "-lc++abi" )
-   
+
     # set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Weverything -Wno-c++98-compat -Wno-c++98-compat-pedantic -Wno-unused-macros -Wno-newline-eof\
     # -Wno-exit-time-destructors -Wno-global-constructors -Wno-gnu-zero-variadic-macro-arguments\
     # -Wno-documentation -Wno-shadow -Wno-missing-prototypes -Wno-vla\
@@ -32,16 +32,22 @@ else()
     return()
 endif()
 
-# add filesystem support 
-link_libraries(stdc++fs)
+# add filesystem support
 
-if(CMAKE_EXE_LINKER_FLAGS MATCHES "lc\\+\\+" AND NOT CMAKE_EXE_LINKER_FLAGS MATCHES "lc\\+\\+fs")
-    message("USING LIBC++")
-    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -lc++fs")
-elseif(NOT CMAKE_EXE_LINKER_FLAGS MATCHES "lstdc\\+\\+fs")
-	set( CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -lstdc++fs" )
-endif()	
-
+if(CMAKE_EXE_LINKER_FLAGS MATCHES "lc\\+\\+")
+	message("USING LIBC++")
+	# Not needed since libc++ 9.0
+ #   	link_libraries(c++fs)
+ #   	if(NOT CMAKE_EXE_LINKER_FLAGS MATCHES "lc\\+\\+fs")
+	# 	set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -lc++fs")
+	# endif()
+else()
+   	message("USING LIBSTDC++")
+   	link_libraries(stdc++fs)
+   	if(NOT CMAKE_EXE_LINKER_FLAGS MATCHES "lstdc\\+\\+fs")
+   		set( CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -lstdc++fs" )
+   	endif()
+endif()
 
 message("CMAKE_EXE_LINKER_FLAGS: " ${CMAKE_EXE_LINKER_FLAGS})
 message("CMAKE_CXX_FLAGS: " ${CMAKE_CXX_FLAGS})
